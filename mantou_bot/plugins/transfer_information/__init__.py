@@ -1,36 +1,43 @@
 from nonebot import on_command, on_message
 from nonebot.adapters.onebot.v11 import Bot, Event, Message
 from nonebot.log import logger
+import json
+from pathlib import Path
 
-
-
-open_close_switch = on_command("开启群聊监听", priority=10, block=True)
+_plugin_state = None
+STATE_FILE = Path(__file__).parent / "plugin_information.json"
+open_switch = on_command("开启群聊监听", priority=10, block=True)
 listener_group = on_command("", priority=10, block=True)
 
-
-@open_close_switch.handle()
-async def send_group_message_test(bot: Bot, event: Event):
-    if TRANSFER_INFORMATION_SWITCH:
-        TRANSFER_INFORMATION_SWITCH = False
+def _load_state():
+    global _plugin_state
+    if STATE_FILE.exists():
+        try:
+            _plugin_state = json.loads(STATE_FILE.read_text("utf-8"))
+        except Exception:
+            _plugin_state = None
     else:
-        TRANSFER_INFORMATION_SWITCH = True
-    target_group_id = 370464176  # 例如 123456789
-    logger.info("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    logger.info(event.get_event_description())
-    # 要发送的文本内容
-    content = "这是 NoneBot 主动给群发的一条测试消息"
+        _plugin_state = None
 
-    logger.info(event.group_id)
-    if event.group_id == 370464176:
-        logger.info("teteteteteteetetetetetet", event.get_event_description())
 
-    # 通过 OneBot API 发送群消息
-    await bot.send_group_msg(
-        group_id=target_group_id,
-        message=Message(content),
+def _save_state():
+    STATE_FILE.write_text(
+        json.dumps(_plugin_state, ensure_ascii=False, indent=2),
+        "utf-8",
     )
 
-    await open_close_switch.finish("已向目标群发送消息。")
+@open_switch.handle()
+async def open_plugin(bot: Bot, event: Event):
+    global _plugin_state
+    _load_state()
+    _plugin_state = True
+    _save_state()
+    content = "插件已开启"
+    await bot.send_group_msg(
+        group_id=event.group_id,
+        message=Message(content),
+    )
+    await open_switch.finish()
 
 
 @listener_group.handle()
