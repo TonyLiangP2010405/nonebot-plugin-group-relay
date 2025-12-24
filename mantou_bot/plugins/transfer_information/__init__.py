@@ -4,12 +4,14 @@ from nonebot.log import logger
 import json
 from pathlib import Path
 
+from nonebot.params import CommandArg
+
 _plugin_information = {}
 _plugin_state = None
 STATE_FILE = Path(__file__).parent / "plugin_information.json"
 open_switch = on_command("开启群聊监听", priority=10, block=True)
 close_switch = on_command("关闭群聊监听", priority=10, block=True)
-listener_group = on_command("", priority=10, block=True)
+add_new_group = on_command("添加监听群组", priority=10, block=True)
 
 def _load_information():
     global _plugin_information
@@ -20,12 +22,12 @@ def _load_information():
         except Exception:
             _plugin_information = {"plugin_state": None}
             STATE_FILE.write_text(
-                json.dumps({"plugin_state": ""}, ensure_ascii=False, indent=2),
+                json.dumps({"plugin_state": "", "groups": {}}, ensure_ascii=False, indent=2),
                 "utf-8",
             )
     else:
         STATE_FILE.write_text(
-            json.dumps({"plugin_state":""}, ensure_ascii=False, indent=2),
+            json.dumps({"plugin_state":"", "groups": {}}, ensure_ascii=False, indent=2),
             "utf-8",
         )
 
@@ -62,9 +64,28 @@ async def close_plugin(bot: Bot, event: Event):
     )
     await close_switch.finish()
 
-@listener_group.handle()
-async def listen_group_message_test(bot: Bot, event: Event):
-    logger.info("teteteteteteetetetetetet", event.group_id)
-    if event.group_id == 370464176:
-        logger.info("teteteteteteetetetetetet", event.get_event_description())
-        return
+@add_new_group.handle()
+async def add_new_group(bot: Bot, event: Event, args: Message = CommandArg()):
+    global _plugin_information
+    new_group_id = args.extract_plain_text()
+    _load_information()
+    if new_group_id:
+        if "groups" not in _plugin_information:
+            _plugin_information["groups"] = {}
+        if str(event.group_id) not in _plugin_information["groups"]:
+            _plugin_information["groups"][event.group_id] = [new_group_id]
+        else:
+            _plugin_information["groups"][str(event.group_id)].append(new_group_id)
+        _save_information()
+        content = "添加监听群组成功"
+        await bot.send_group_msg(
+            group_id=event.group_id,
+            message=Message(content),
+        )
+    else:
+        content = "请重新输入命令并加上群号 例如 /添加群组 12345"
+        await bot.send_group_msg(
+            group_id=event.group_id,
+            message=Message(content),
+        )
+        await add_new_group.finish()
