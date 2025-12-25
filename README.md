@@ -23,12 +23,6 @@ _✨ NoneBot 插件简单描述 ✨_
 
 这是一个 nonebot2 插件项目的模板库, 你可以直接使用本模板创建你的 nonebot2 插件项目的仓库
 
-<details open>
-
-</details>
-
-
-
 ## 📖 介绍
 
 `nonebot-plugin-group-relay` 是一个用于 **在多个 QQ 群之间中继 / 转发消息** 的 NoneBot2 插件。
