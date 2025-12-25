@@ -1,5 +1,4 @@
 [build-system]
-# 按 Poetry 文档 “Packaging” 要求，使用 poetry-core 作为构建后端
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
@@ -12,7 +11,7 @@ requires-python = ">=3.9, <4.0"
 license = { file = "LICENSE" }
 
 authors = [
-  { name = "你的名字", email = "你的邮箱@example.com" },
+  { name = "TonyLiang", email = "tghrtwld@example.com" },
 ]
 
 dependencies = [
@@ -37,21 +36,18 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "License :: OSI Approved :: MIT License",
   "Framework :: AsyncIO",
-  "Framework :: Nonebot",
   "Intended Audience :: Developers",
   "Topic :: Communications :: Chat",
 ]
 
 [project.urls]
-Homepage = "https://github.com/你的GitHub用户名/nonebot-plugin-group-relay"
-Repository = "https://github.com/你的GitHub用户名/nonebot-plugin-group-relay"
-Issues = "https://github.com/你的GitHub用户名/nonebot-plugin-group-relay/issues"
+Homepage = "https://github.com/TonyLiangP2010405/nonebot-plugin-group-relay"
+Repository = "https://github.com/TonyLiangP2010405/nonebot-plugin-group-relay"
+Issues = "https://github.com/TonyLiangP2010405/nonebot-plugin-group-relay/issues"
 
-# 让 NoneBot 商店 / load_from_toml 能发现你的插件
 [project.entry-points."nonebot.plugin"]
 nonebot_plugin_group_relay = "nonebot_plugin_group_relay"
 
-# 告诉 Poetry：要把哪个目录当作 package 打包进去
 [tool.poetry]
 packages = [
   { include = "nonebot_plugin_group_relay" }
@@ -71,7 +67,7 @@ target-version = "py39"
 line-ending = "lf"
 
 [tool.ruff.lint]
-# 为了简短，这里只保留你之前的规则选择和忽略项
+# 规则选择
 select = [
   "F",     # Pyflakes
   "W",     # pycodestyle warnings
@@ -113,6 +109,7 @@ select = [
   "TRY",   # tryceratops
   "RUF",   # Ruff-specific rules
 ]
+
 ignore = [
   "E402",    # module-import-not-at-top-of-file
   "B008",    # function-call-in-default-argument
