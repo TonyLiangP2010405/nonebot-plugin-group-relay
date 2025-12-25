@@ -3,7 +3,6 @@ from nonebot.adapters.onebot.v11 import Bot, Event, Message
 from nonebot.log import logger
 import json
 from pathlib import Path
-
 from nonebot.params import CommandArg
 
 _plugin_information = {}
@@ -13,9 +12,11 @@ open_switch = on_command("开启群聊监听", priority=10, block=True)
 close_switch = on_command("关闭群聊监听", priority=10, block=True)
 add_new_group = on_command("添加监听群组", priority=10, block=True)
 remove_group = on_command("删除监听群组", priority=10, block=True)
+transform_information = on_message(priority=10, block=True)
 
 def _load_information():
     global _plugin_information
+    global _plugin_state
     if STATE_FILE.exists():
         try:
             _plugin_information = json.loads(STATE_FILE.read_text("utf-8"))
@@ -50,7 +51,7 @@ async def open_plugin(bot: Bot, event: Event):
         group_id=event.group_id,
         message=Message(content),
     )
-    await open_switch.finish()
+
 
 @close_switch.handle()
 async def close_plugin(bot: Bot, event: Event):
@@ -63,7 +64,7 @@ async def close_plugin(bot: Bot, event: Event):
         group_id=event.group_id,
         message=Message(content),
     )
-    await close_switch.finish()
+
 
 @add_new_group.handle()
 async def add_new_group(bot: Bot, event: Event, args: Message = CommandArg()):
@@ -89,7 +90,7 @@ async def add_new_group(bot: Bot, event: Event, args: Message = CommandArg()):
             group_id=event.group_id,
             message=Message(content),
         )
-    await add_new_group.finish()
+
 
 
 @remove_group.handle()
@@ -129,3 +130,39 @@ async def remove_exist_group(bot: Bot, event: Event, args: Message = CommandArg(
                         message=Message(warning3),
                     )
     await remove_group.finish()
+
+
+@transform_information.handle()
+async def transformation_information(bot: Bot, event: Event):
+    global _plugin_information, _plugin_state
+    _load_information()
+    logger.info(_plugin_information)
+    _plugin_information["plugin_state"] = False
+    if _plugin_state is not None and _plugin_state != False:
+        if str(event.group_id) in _plugin_information["groups"]:
+            sender_group_id = event.group_id
+            group_info = await bot.get_group_info(group_id=sender_group_id)
+            sender_group_name = group_info["group_name"]
+            sender_name = event.sender.card
+            sender_message = event.get_message()
+            check_message = sender_message.extract_plain_text()
+            logger.info(sender_name)
+            if not sender_name:
+                user_information = await bot.get_stranger_info(user_id=event.sender.user_id)
+                sender_name = user_information["nickname"]
+            if check_message != "/开启群聊监听" and check_message != "/关闭群聊监听" and check_message != "/添加监听群组" and check_message != "/删除监听群组":
+                sender_information = f"来自群[{sender_group_id}] {sender_group_name}的 {sender_name} 说"
+                receivers = _plugin_information["groups"][str(event.group_id)]
+                for receiver in receivers:
+                    await bot.send_group_msg(
+                        group_id=receiver,
+                        message=Message(sender_information),
+                    )
+                    await bot.send_group_msg(
+                        group_id=receiver,
+                        message=Message(sender_message),
+                    )
+
+
+
+
