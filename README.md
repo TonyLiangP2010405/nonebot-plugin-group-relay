@@ -12,7 +12,7 @@ _✨ NoneBot 插件简单描述 ✨_
 
 
 <a href="./LICENSE">
-    <img src="https://img.shields.io/github/license/owner/nonebot-plugin-group-relay.svg" alt="license">
+    <img src="https://img.shields.io/github/license/TonyLiangP2010405/nonebot-plugin-group-relay.svg" alt="license">
 </a>
 <a href="https://pypi.python.org/pypi/nonebot-plugin-group-relay">
     <img src="https://img.shields.io/pypi/v/nonebot-plugin-group-relay.svg" alt="pypi">
