@@ -12,6 +12,7 @@ STATE_FILE = Path(__file__).parent / "plugin_information.json"
 open_switch = on_command("开启群聊监听", priority=10, block=True)
 close_switch = on_command("关闭群聊监听", priority=10, block=True)
 add_new_group = on_command("添加监听群组", priority=10, block=True)
+remove_group = on_command("删除监听群组", priority=10, block=True)
 
 def _load_information():
     global _plugin_information
@@ -88,4 +89,43 @@ async def add_new_group(bot: Bot, event: Event, args: Message = CommandArg()):
             group_id=event.group_id,
             message=Message(content),
         )
-        await add_new_group.finish()
+    await add_new_group.finish()
+
+
+@remove_group.handle()
+async def remove_exist_group(bot: Bot, event: Event, args: Message = CommandArg()):
+    global _plugin_information
+    old_group_id = args.extract_plain_text()
+    _load_information()
+    if old_group_id:
+        if "groups" not in _plugin_information:
+            warning1 = "你的已经添加的群组是空，无法删除该群组"
+            await bot.send_group_msg(
+                group_id=event.group_id,
+                message=Message(warning1),
+            )
+        else:
+            if str(event.group_id) not in _plugin_information["groups"]:
+                warning2 = "你的已经添加的群组是空，无法删除该群组"
+                await bot.send_group_msg(
+                    group_id=event.group_id,
+                    message=Message(warning2),
+                )
+            else:
+                if old_group_id in _plugin_information["groups"][str(event.group_id)]:
+                    _plugin_information["groups"][str(event.group_id)].remove(old_group_id)
+                    content = "删除群组 "+ old_group_id +" 成功"
+                    if len(_plugin_information["groups"][str(event.group_id)]) == 0:
+                        del _plugin_information["groups"][str(event.group_id)]
+                    _save_information()
+                    await bot.send_group_msg(
+                        group_id=event.group_id,
+                        message=Message(content),
+                    )
+                else:
+                    warning3 = "你的已经添加的群组里面没有此群组，删除失败"
+                    await bot.send_group_msg(
+                        group_id=event.group_id,
+                        message=Message(warning3),
+                    )
+    await remove_group.finish()
