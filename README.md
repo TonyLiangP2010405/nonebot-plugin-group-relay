@@ -39,7 +39,7 @@ _✨ NoneBot 插件简单描述 ✨_
 <summary>使用 nb-cli 安装</summary>
 在 nonebot2 项目的根目录下打开命令行, 输入以下指令即可安装
 
-    nb plugin install nonebot-plugin-group-relay
+    nb plugin install nonebot_plugin_group_relay
 
 </details>
 
@@ -50,7 +50,7 @@ _✨ NoneBot 插件简单描述 ✨_
 <details>
 <summary>pip</summary>
 
-    pip install nonebot-plugin-group-relay
+    pip install nonebot_plugin_group_relay
 </details>
 打开 nonebot2 项目根目录下的 `pyproject.toml` 文件, 在 `[tool.nonebot]` 部分追加写入
 
