@@ -29,7 +29,7 @@ __plugin_meta__ = PluginMetadata(
 """.strip(),
     type="application",
 
-    homepage="https://github.com/TonyLiangP2010405/nonebot-transfer-information",
+    homepage="https://github.com/TonyLiangP2010405/nonebot-plugin-group-relay",
 
     supported_adapters={"~onebot.v11"},
 )
