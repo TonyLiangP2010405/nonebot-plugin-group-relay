@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "nonebot-plugin-group-relay"
-version = "0.1.0"
+version = "0.1.1"
 description = "在多个 QQ 群之间中继/转发消息的 NoneBot2 插件"
 readme = "README.md"
 requires-python = ">=3.9, <4.0"
