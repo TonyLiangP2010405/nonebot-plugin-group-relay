@@ -1,4 +1,10 @@
 from nonebot.plugin import PluginMetadata
+from nonebot import on_command, on_message
+from nonebot.adapters.onebot.v11 import Bot, Event, Message
+from nonebot.log import logger
+import json
+from nonebot.params import CommandArg
+from nonebot_plugin_localstore import get_plugin_data_file
 
 __plugin_meta__ = PluginMetadata(
     name="群消息中继",
@@ -34,16 +40,13 @@ __plugin_meta__ = PluginMetadata(
     supported_adapters={"~onebot.v11"},
 )
 
-from nonebot import on_command, on_message
-from nonebot.adapters.onebot.v11 import Bot, Event, Message
-from nonebot.log import logger
-import json
-from pathlib import Path
-from nonebot.params import CommandArg
+
 
 _plugin_information = {}
 _plugin_state = None
-STATE_FILE = Path(__file__).parent / "plugin_information.json"
+
+
+STATE_FILE = get_plugin_data_file("plugin_information.json")
 open_switch = on_command("开启群聊监听", priority=10, block=True)
 close_switch = on_command("关闭群聊监听", priority=10, block=True)
 add_new_group = on_command("添加监听群组", priority=10, block=True)
