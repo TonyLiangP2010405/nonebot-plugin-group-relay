@@ -4,7 +4,6 @@ from nonebot.adapters.onebot.v11 import Bot, Event, Message
 from nonebot.log import logger
 import json
 from nonebot.params import CommandArg
-from nonebot_plugin_localstore import get_plugin_data_file
 
 __plugin_meta__ = PluginMetadata(
     name="群消息中继",
@@ -46,35 +45,38 @@ _plugin_information = {}
 _plugin_state = None
 
 
-STATE_FILE = get_plugin_data_file("plugin_information.json")
 open_switch = on_command("开启群聊监听", priority=10, block=True)
 close_switch = on_command("关闭群聊监听", priority=10, block=True)
 add_new_group = on_command("添加监听群组", priority=10, block=True)
 remove_group = on_command("删除监听群组", priority=10, block=True)
 transform_information = on_message(priority=10, block=True)
 
+def get_state_file():
+    from nonebot_plugin_localstore import get_plugin_data_file
+    return get_plugin_data_file("plugin_information.json")
+
 def _load_information():
     global _plugin_information
     global _plugin_state
-    if STATE_FILE.exists():
+    if get_state_file().exists():
         try:
-            _plugin_information = json.loads(STATE_FILE.read_text("utf-8"))
+            _plugin_information = json.loads(get_state_file().read_text("utf-8"))
             _plugin_state = _plugin_information["plugin_state"]
         except Exception:
             _plugin_information = {"plugin_state": None}
-            STATE_FILE.write_text(
+            get_state_file().write_text(
                 json.dumps({"plugin_state": "", "groups": {}}, ensure_ascii=False, indent=2),
                 "utf-8",
             )
     else:
-        STATE_FILE.write_text(
+        get_state_file().write_text(
             json.dumps({"plugin_state":"", "groups": {}}, ensure_ascii=False, indent=2),
             "utf-8",
         )
 
 
 def _save_information():
-    STATE_FILE.write_text(
+    get_state_file().write_text(
         json.dumps(_plugin_information, ensure_ascii=False, indent=2),
         "utf-8",
     )
